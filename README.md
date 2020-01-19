@@ -1,5 +1,3 @@
-# 前端自动化构建部署(CI/CD)流程
-
 <a name="bsFgN"></a>
 ## 什么是CI/CD？
 CICD 是 持续集成（Continuous Integration）和持续部署（Continuous Deployment）简称。指在开发过程中自动执行一系列脚本来减低开发引入 bug 的概率，在新代码从开发到部署的过程中，尽量减少人工的介入。
@@ -14,7 +12,7 @@ CICD 是 持续集成（Continuous Integration）和持续部署（Continuous De
 前端发布流程基于gitlab-ci以及gitlab-runner，runner运行环境目前为docker，保证项目之间的开发版本不会有冲突，打包过后的前端包文件，通过**rsync**同步到静态资源文件中，通过监听master（生产环境）dev（开发环境）变动自动执行发布流程。
 <a name="8bWms"></a>
 ## 流程图
-![](https://cdn.nlark.com/yuque/0/2020/png/304762/1579420815805-390ed6a0-81f2-479a-9e7f-757428379aed.png#align=left&display=inline&height=952&originHeight=952&originWidth=2468&size=0&status=done&style=none&width=2468)
+![](https://user-gold-cdn.xitu.io/2020/1/19/16fbcf006e8565a5?w=2468&h=952&f=png&s=21587)
 <a name="neac3"></a>
 ## 实现步骤
 1.首先用docker+nginx部署项目<br />2.在gitlab新建的项目的CI/CD配置中填写需要发布到服务器的相关信息<br />3.将你所需要发布的项目下新建一个.gitlab-ci.yml文件，让gitlab去执行自动化流程<br />4.打包构建，提交代码，触发钩子执行自动化构建发布
@@ -98,7 +96,7 @@ images -a 查看所有镜像，<br />docker rm 容器id
 ### 2.在gitlab新建的项目的CI/CD配置中填写需要发布到服务器的相关信息
 <a name="pQcaI"></a>
 #### 2.1Gitlab上项目中CI/CD中的variables变量配置（用在.yml里的，防止代码中泄露服务器信息）
-![](https://cdn.nlark.com/yuque/0/2019/png/210661/1554188233960-b32e5273-16d2-45ba-834f-ace309264c52.png#align=left&display=inline&height=1726&originHeight=1726&originWidth=3344&status=done&style=none&width=3344)
+![](https://user-gold-cdn.xitu.io/2020/1/19/16fbcfea555c7278?w=1832&h=900&f=png&s=434546)
 <a name="Izzqr"></a>
 #### 2.2接下来在服务器上操作，配置免密登录
 生产密钥对: ssh-keygen -t rsa，配置让gitlab服务器和前端代码服务器之间可以免密登录具体免密登录操作如下：<br />登录服务器，cd .ssh 执行 ssh-keygen -t rsa命令，会生成id_rsa（秘钥）和id_rsa.pub（公钥）两个文件
@@ -107,7 +105,7 @@ images -a 查看所有镜像，<br />docker rm 容器id
 cd .ssh
 ssh-keygen -t rsa
 ```
-![image.png](https://cdn.nlark.com/yuque/0/2020/png/304762/1579418595193-8dd4ea5f-ad23-49fa-b5a0-01ad36d9e274.png#align=left&display=inline&height=370&name=image.png&originHeight=370&originWidth=554&size=124238&status=done&style=none&width=554)
+![image.png](https://user-gold-cdn.xitu.io/2020/1/19/16fbcf0070a64b74?w=554&h=370&f=png&s=124238)
 
 将公钥id_rsa.pub中的内容copy到authorized_keys中（做免密登录）
 <a name="6IkO0"></a>
@@ -130,8 +128,8 @@ docker logs gitlab-runner
 ```
 <a name="XML1M"></a>
 #### 2.4服务器上用docker注册gitlab-runner
-![image.png](https://cdn.nlark.com/yuque/0/2020/png/304762/1579418997937-d8395b65-81ef-45aa-a47d-cc451e1a07f8.png#align=left&display=inline&height=931&name=image.png&originHeight=931&originWidth=1534&size=157020&status=done&style=none&width=1534)
 
+![](https://user-gold-cdn.xitu.io/2020/1/19/16fbcfbf827653ce?w=1542&h=933&f=png&s=307033)
 docker注册runner
 ```shell
 docker run --rm -t -i -v /srv/gitlab-runner/config:/etc/gitlab-runner gitlab/gitlab-runner register
@@ -145,10 +143,10 @@ executor: ssh, docker+machine, docker-ssh+machine, kubernetes, docker,
 parallels, virtualbox, docker-ssh, shell: docker <br />6.输入Runner执行者：<br />Please enter the
 Docker image (eg. ruby:2.1): alpine:latest <br />如果您选择Docker作为执行程序，则会要求您为未在以下项目中定义一个的项目使用默认映像：这里就输入alpine:latest就行了
 
-**到这一步服务器上就配置完成了**<br />**想要看自己的gitlab-runner启动没有，可以输入docker ps -a查看**<br />**![image.png](https://cdn.nlark.com/yuque/0/2020/png/304762/1579419585667-88e1a539-8036-4c25-a142-dbd735a9aa83.png#align=left&display=inline&height=270&name=image.png&originHeight=270&originWidth=1883&size=69132&status=done&style=none&width=1883)**
+**到这一步服务器上就配置完成了**<br />**想要看自己的gitlab-runner启动没有，可以输入docker ps -a查看**<br />**![image.png](https://user-gold-cdn.xitu.io/2020/1/19/16fbcf0074db76d0?w=1883&h=270&f=png&s=69132)**
 <a name="piux8"></a>
 ### 3.将你所需要发布的项目下新建一个.gitlab-ci.yml文件，让gitlab去执行自动化流程
-![](https://cdn.nlark.com/yuque/0/2019/png/210661/1554188979590-69b0ac7f-a02e-49e0-a5d8-b8bfced63154.png#align=left&display=inline&height=981&originHeight=981&originWidth=688&status=done&style=none&width=688)
+![](https://user-gold-cdn.xitu.io/2020/1/19/16fbcf007679f2ad?w=688&h=981&f=png&s=579260)
 <a name="emfTn"></a>
 #### 3.1gitlab-ci.yml文件：
 
@@ -217,16 +215,16 @@ SERVER_DEMO_HOST：目标CICD服务器IP地址<br />SERVER_DEMO_PATH：服务器
 #### 提交代码触发CI/CD流程
 然后在gitlab项目中的CI/CD流水线中能看到自己的刚刚触发的CI/CD任务，如下图所示
 <a name="hFErI"></a>
-### ![image.png](https://cdn.nlark.com/yuque/0/2020/png/304762/1579420223966-109e68ee-0085-4db7-ad48-e985c0da27cb.png#align=left&display=inline&height=744&name=image.png&originHeight=744&originWidth=1730&size=183771&status=done&style=none&width=1730)
-点击状态或者阶段都可以进入构建发布详情页面查看内容<br />![image.png](https://cdn.nlark.com/yuque/0/2020/png/304762/1579420439321-50ef9c83-dd61-49c7-9c38-c7c92261b7ec.png#align=left&display=inline&height=534&name=image.png&originHeight=534&originWidth=1107&size=55259&status=done&style=none&width=1107)
+### ![image.png](https://user-gold-cdn.xitu.io/2020/1/19/16fbcf009e19906e?w=1730&h=744&f=png&s=183771)
+点击状态或者阶段都可以进入构建发布详情页面查看内容<br />![image.png](https://user-gold-cdn.xitu.io/2020/1/19/16fbcf00bc62d806?w=1107&h=534&f=png&s=55259)
 
 <a name="W2JG1"></a>
 #### 构建：build
-![image.png](https://cdn.nlark.com/yuque/0/2020/png/304762/1579420493828-bfe83e2e-12ca-49ef-a3e4-f90c68165000.png#align=left&display=inline&height=916&name=image.png&originHeight=916&originWidth=1906&size=201898&status=done&style=none&width=1906)
+![image.png](https://user-gold-cdn.xitu.io/2020/1/19/16fbcf00c633a522?w=1906&h=916&f=png&s=201898)
 
 <a name="dA4a3"></a>
 #### 发布：deploy
-![image.png](https://cdn.nlark.com/yuque/0/2020/png/304762/1579420533441-dd21ac79-4939-4439-9271-dfdc6fb5776c.png#align=left&display=inline&height=912&name=image.png&originHeight=912&originWidth=1914&size=169039&status=done&style=none&width=1914)
+![image.png](https://user-gold-cdn.xitu.io/2020/1/19/16fbcf00d45c09e8?w=1914&h=912&f=png&s=169039)
 
 至此，大功告成，妈妈再也不用担心我发布线上代码耗费时间和出错了
 
